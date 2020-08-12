@@ -118,6 +118,14 @@ class Recognizer {
      */
     async selectModel(modelName) {
       // TODO: use tf.dispose to release the memory
+      if(this.model !== null) {
+        this.model.then((m)=>m.dispose());
+        this.model = null;
+      }
+      if(!Object.keys(MINLEN).includes(modelName)){
+        alert(`Sorry, ${modelName} is not implemented yet.`);
+        return;
+      }
       this.minLength = MINLEN[modelName];
       this.model = this.loadModel(modelName);
       this.dictionary = this.loadDictionary(modelName);
@@ -244,6 +252,8 @@ class Recognizer {
           let inputTensor = tf.tensor([melSpectrogram.slice(0,650)]);
           let predict_tensor = model.predict(inputTensor);
           let predict_array = Array.from(predict_tensor.dataSync());
+          inputTensor.dispose();
+          predict_tensor.dispose();
 
           return this.arr2str(predict_array, dictionary);
       }
@@ -420,10 +430,7 @@ class Recognizer {
         soundSum+=Math.sqrt(streamBuffer[i]*streamBuffer[i]);
       }
       let soundRMS = soundSum/this.listenStreamSize;
-      console.log(soundRMS);
       if(soundRMS > this.threshold){
-        // FIXME: save previous 1 frame.
-        // HTML Display
         // create event obj for listening
         const onListenEvent = new CustomEvent("onlisten");
         document.dispatchEvent(onListenEvent);
@@ -481,6 +488,8 @@ class Recognizer {
           // create event obj for start prediction
           const onStartEvent = new CustomEvent("onstartprediction");
           document.dispatchEvent(onStartEvent);
+
+          // Start prediction
           this.result = this.predictAudioBuffer(resampledAudioBuffer.getChannelData(0));
           this.result.then(function (resultStr) {
             // create event obj for listen
@@ -489,11 +498,9 @@ class Recognizer {
             console.log
           });
         }.bind(this);
+
         offlineCtx.startRendering();
         source.start(0);
-
-
-
         this.audioBuffer = [];
       }
       else {

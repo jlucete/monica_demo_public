@@ -44,27 +44,40 @@ let statusElem = document.getElementById("recogStatus");
 let resultElem = document.getElementById("recogResult");
 
 startButton.onclick = () => {
+  if(recognizer.model === null){
+    statusElem.innerHTML = 'Complete the loading model first!';
+    return;
+  }
   statusElem.innerHTML = 'Say Something...';
   recognizer.startListen();
 }
 
 stopButton.onclick = () => {
+  if(recognizer.model === null){
+    statusElem.innerHTML = 'Complete the loading model first!';
+    return;
+  }
   statusElem.innerHTML = 'Stop Listening';
   recognizer.stopListen();
 }
 
 let onProcess = false;
+let t0, t1;
 
 recognizer.onStartPrediction = function() {
   console.log('START RECOG');
   statusElem.innerHTML = `Recognizing...`;
   onProcess = true;
+  t0 = performance.now();
 }
 
 recognizer.onResult = function(e) {
+  t1 = performance.now();
   console.log(`Predict: ${e.detail.result}`);
   if (e.detail.result !== ""){
     resultElem.innerHTML = `Did you said "${e.detail.result}" ?`;
+    document.getElementById('recogTime').innerHTML = `Latency: ${Math.round(t1-t0)}ms`;
+
   }
   onProcess = false;
   // TODO: Intend detection.

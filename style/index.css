@@ -5,8 +5,19 @@ body {
   text-align: center;
   vertical-align: middle;
 }
-#myBoard {
+#container {
   position: relative;
-  left: 10vw;
-  top: 10vh;
+  left: 100px;
+  top: 50px;
+  text-align: center;
+}
+
+#container-text {
+  width: 500px;
+  text-align: center;
+  position: relative;
+  left: 100px;
+}
+.performance {
+  float: left;
 }

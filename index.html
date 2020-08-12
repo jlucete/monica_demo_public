@@ -25,9 +25,17 @@
     <script defer src="src/chess.js"></script>
     <script defer src="src/ChessTest.js"></script>
 
+    <!--Dynamic Graph for memory monitoring-->
+    <script defer src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script defer src="src/MemoryMonitor.js"></script>
+
+
     <!--Main-->
     <link rel="stylesheet" enctype="text/css" href="style/index.css">
     <script defer src="src/index.js"></script>
+
+
+
 
     <title>ASR TEST</title>
   </head>
@@ -40,12 +48,16 @@
     <button id="transformerBtn">Transformer</button>
     <button id="vggbLSTMBtn">vggbLSTM</button>
     <h2 id="recogStatus">Press start to recognize</h2>
-    <h3 id="recogResult"></h2>
     <button id="start">Start</button>
     <button id="stop">Stop</button>
-
-    <div id="myBoard" style="width: 400px"></div>
-
-
+    <section id="container">
+      <div class="performance" id="myBoard" style="width: 400px">
+      </div>
+      <div class="performance" id="container-text">
+        <h3 id="recogResult">recogResult</h3>
+        <h3 id="recogTime">recogTime</h3>
+        <div id="chartContainer" style="height: 20%; width:100%;"></div>
+      </div>
+    </section>
   </body>
 </html>
