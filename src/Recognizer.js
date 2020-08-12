@@ -124,13 +124,13 @@ class Recognizer {
     async loadModel(modelName) {
         console.log("Load model: "+modelName);
         this.modelName = modelName;
-        return tf.loadGraphModel(`http://127.0.0.1:8000/models/${modelName}/model.json`);
+        return tf.loadGraphModel(`https://${window.location.hostname}/models/${modelName}/model.json`);
     }
 
     async loadDictionary(modelName) {
       // Load proper Dictionary
       console.log("Loading JSON");
-      return $.getJSON(`http://127.0.0.1:8000/models/${modelName}/token_list.json`);
+      return $.getJSON(`https://${window.location.hostname}/models/${modelName}/token_list.json`);
     }
 
     /**
