@@ -10,13 +10,38 @@
 // step3. listen()
 
 const recognizer = new Recognizer();
-recognizer.selectModel('monica');
 
+
+let monicaButton = document.getElementById("monicaBtn");
+let transformerButton = document.getElementById("transformerBtn");
+let vggbLSTMButton = document.getElementById("vggbLSTMBtn");
+
+monicaButton.onclick = () => {
+  __selectModel('monica');
+}
+transformerButton.onclick = () =>{
+  __selectModel('transformer');
+}
+vggbLSTMButton.onclick = () => {
+  __selectModel('vggbLSTM');
+}
+
+function __selectModel(modelName) {
+  document.getElementById('selectModelStatus').innerHTML = `Loading ${modelName}...`;
+  recognizer.selectModel(modelName)
+    .then(() => {
+    document.getElementById('selectModelStatus').innerHTML = `Loading complete!`
+    })
+    .catch(()=>{
+    document.getElementById('selectModelStatus').innerHTML = `Loading failed`
+  });
+
+}
 
 let startButton = document.getElementById("start");
 let stopButton = document.getElementById("stop");
-let statusElem = document.getElementById("status");
-let resultElem = document.getElementById("result");
+let statusElem = document.getElementById("recogStatus");
+let resultElem = document.getElementById("recogResult");
 
 startButton.onclick = () => {
   statusElem.innerHTML = 'Say Something...';
@@ -28,15 +53,27 @@ stopButton.onclick = () => {
   recognizer.stopListen();
 }
 
+let onProcess = false;
 
-
+recognizer.onStartPrediction = function() {
+  console.log('START RECOG');
+  statusElem.innerHTML = `Recognizing...`;
+  onProcess = true;
+}
 
 recognizer.onResult = function(e) {
   console.log(`Predict: ${e.detail.result}`);
   if (e.detail.result !== ""){
     resultElem.innerHTML = `Did you said "${e.detail.result}" ?`;
   }
+  onProcess = false;
   // TODO: Intend detection.
+}
+
+recognizer.onListen = function() {
+  if (!onProcess){
+    statusElem.innerHTML = `Listening...`;
+  }
 }
 
 

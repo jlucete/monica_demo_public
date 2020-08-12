@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 /**
  * @copyright Copyright 2020, Jaegeon Jo, All rights reserved
  * @author Jaegeon Jo <jlucete@gmail.com>
@@ -94,6 +94,8 @@ class Recognizer {
 
         // Event obj for listen.
         this.onResult = null;
+        this.onStartPrediction = null;
+        this.onListen = null;
 
         // debug
         this.resultArray = [];
@@ -108,7 +110,7 @@ class Recognizer {
      * Select model for speech recognition.
      * Available models are "transformer", "vggbLSTM", "monica"
      * @param {string} modelName Model name for speech recognition
-     * @return {void} Return nothing
+     * @return {Promise<Promise<tf.model>, Array<string>>} Return promises of model and dictionary.
      * @example
      * let recognizer = new Recognizer();
      * recognizer.selectModel("transformer");
@@ -119,18 +121,21 @@ class Recognizer {
       this.minLength = MINLEN[modelName];
       this.model = this.loadModel(modelName);
       this.dictionary = this.loadDictionary(modelName);
+      return Promise.all([this.model, this.dictionary]);
     }
 
     async loadModel(modelName) {
         console.log("Load model: "+modelName);
         this.modelName = modelName;
-        return tf.loadGraphModel(`https://${window.location.hostname}/monica_demo_public/models/${modelName}/model.json`);
+        // return tf.loadGraphModel(`https://${window.location.hostname}/monica_demo_public/models/${modelName}/model.json`);
+        return tf.loadGraphModel(`models/${modelName}/model.json`);
     }
 
     async loadDictionary(modelName) {
       // Load proper Dictionary
       console.log("Loading JSON");
-      return $.getJSON(`https://${window.location.hostname}/monica_demo_public/models/${modelName}/token_list.json`);
+      // return $.getJSON(`https://${window.location.hostname}/monica_demo_public/models/${modelName}/token_list.json`);
+      return $.getJSON(`models/${modelName}/token_list.json`);
     }
 
     /**
@@ -236,11 +241,11 @@ class Recognizer {
           return this.arr2str(predict_array, dictionary);
       }
       if(this.modelName === "monica") {
-        let inputTensor = tf.tensor([melSpectrogram.slice(0,650)]);
-        let predict_tensor = model.predict(inputTensor);
-        let predict_array = Array.from(predict_tensor.dataSync());
+          let inputTensor = tf.tensor([melSpectrogram.slice(0,650)]);
+          let predict_tensor = model.predict(inputTensor);
+          let predict_array = Array.from(predict_tensor.dataSync());
 
-        return this.arr2str(predict_array, dictionary);
+          return this.arr2str(predict_array, dictionary);
       }
     }
 
@@ -378,6 +383,8 @@ class Recognizer {
 
       // add EventListener for result
       document.addEventListener("onresult", this.onResult);
+      document.addEventListener("onstartprediction", this.onStartPrediction);
+      document.addEventListener("onlisten", this.onListen);
 
       navigator.mediaDevices.getUserMedia({audio: true, video: false})
       .then((stream) => this.__startListen.call(this, stream))
@@ -406,7 +413,7 @@ class Recognizer {
       const streamBuffer = stream.inputBuffer.getChannelData(0);
       // playback
       this.resultArray.push(stream.inputBuffer);
-      let statusHTML = document.getElementById("status");
+      let statusHTML = document.getElementById("recogStatus");
 
       let soundSum = 0;
       for (let i = 0; i < streamBuffer.length; i ++) {
@@ -417,7 +424,9 @@ class Recognizer {
       if(soundRMS > this.threshold){
         // FIXME: save previous 1 frame.
         // HTML Display
-        statusHTML.innerHTML = "Listening...";
+        // create event obj for listening
+        const onListenEvent = new CustomEvent("onlisten");
+        document.dispatchEvent(onListenEvent);
         const nextAudioBuffer = new Float32Array(this.audioBuffer.length+streamBuffer.length);
         nextAudioBuffer.set(this.audioBuffer);
         nextAudioBuffer.set(streamBuffer, this.audioBuffer.length);
@@ -469,6 +478,9 @@ class Recognizer {
           currSource.start();
 
           const resampledAudioBuffer = e.renderedBuffer;
+          // create event obj for start prediction
+          const onStartEvent = new CustomEvent("onstartprediction");
+          document.dispatchEvent(onStartEvent);
           this.result = this.predictAudioBuffer(resampledAudioBuffer.getChannelData(0));
           this.result.then(function (resultStr) {
             // create event obj for listen
