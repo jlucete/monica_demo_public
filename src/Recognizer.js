@@ -124,13 +124,13 @@ class Recognizer {
     async loadModel(modelName) {
         console.log("Load model: "+modelName);
         this.modelName = modelName;
-        return tf.loadGraphModel(`https://${window.location.hostname}/models/${modelName}/model.json`);
+        return tf.loadGraphModel(`https://${window.location.hostname}/monica_demo_public/models/${modelName}/model.json`);
     }
 
     async loadDictionary(modelName) {
       // Load proper Dictionary
       console.log("Loading JSON");
-      return $.getJSON(`https://${window.location.hostname}/models/${modelName}/token_list.json`);
+      return $.getJSON(`https://${window.location.hostname}/monica_demo_public/models/${modelName}/token_list.json`);
     }
 
     /**
@@ -189,7 +189,6 @@ class Recognizer {
     }
 
     async loadAudio(filePath) {
-
         // Send XMLHttpRequest to server
         // ! ajax doesn't support arraybuffer.
         let url = `http://127.0.0.1:8000/${filePath}`;
