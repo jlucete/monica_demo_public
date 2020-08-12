@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+
+    <!--ASR-->
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"> </script>
+    <script defer src="src/dsp_ckfft.js"></script>
+    <script defer src="src/MelSpectrogramProcessor.js"></script>
+    <script defer type="application/javascript" src="src/Recognizer.js"></script>
+
+    <!--Chess-->
+    <script src="http://www.willangles.com/projects/chessboard/js/chess.js"></script>
+    <link defer rel="stylesheet"
+      href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+      integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
+      crossorigin="anonymous">
+    <script defer src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+      integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+      crossorigin="anonymous"></script>
+    <!--Test
+    <script defer src="src/ChessInterface.js"></script>
+    -->
+    <script defer src="src/ChessTest.js"></script>
+
+    <!--Main-->
+    <link rel="stylesheet" enctype="text/css" href="/style/index.css">
+    <script defer src="src/index.js"></script>
+
+    <title>ASR TEST</title>
+  </head>
+
+  <body>
+    <h1>ASR TEST</h1>
+    <h2 id="status">Press Start</h2>
+    <h2 id="result"></h2>
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
+
+    <div id="myBoard" style="width: 400px"></div>
+    <label>Status:</label>
+    <div id="status"></div>
+    <label>FEN:</label>
+    <div id="fen"></div>
+    <label>PGN:</label>
+    <div id="pgn"></div>
+
+
+  </body>
+</html>
