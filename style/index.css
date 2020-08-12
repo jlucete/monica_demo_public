@@ -1,10 +1,4 @@
-body {
-  background: #222;
-  color: white;
-  font-family: Helvetica-Neue, sans-serif;
-  text-align: center;
-  vertical-align: middle;
-}
+
 #board1 {
   position: relative;
   left: 10vw;
