@@ -96,6 +96,9 @@ class Recognizer {
         this.onResult = null;
         this.onStartPrediction = null;
         this.onListen = null;
+        this.onSilence = null;
+
+        this.silenceFrameCount = 0;
 
         // debug
         this.resultArray = [];
@@ -136,7 +139,8 @@ class Recognizer {
         console.log("Load model: "+modelName);
         this.modelName = modelName;
         // return tf.loadGraphModel(`https://${window.location.hostname}/monica_demo_public/models/${modelName}/model.json`);
-        return tf.loadGraphModel(`models/${modelName}/model.json`);
+        this.model = tf.loadGraphModel(`models/${modelName}/model.json`);
+        return this.model;
     }
 
     async loadDictionary(modelName) {
@@ -395,6 +399,8 @@ class Recognizer {
       document.addEventListener("onresult", this.onResult);
       document.addEventListener("onstartprediction", this.onStartPrediction);
       document.addEventListener("onlisten", this.onListen);
+      document.addEventListener("onslience", this.onSilence);
+
 
       navigator.mediaDevices.getUserMedia({audio: true, video: false})
       .then((stream) => this.__startListen.call(this, stream))
@@ -502,11 +508,20 @@ class Recognizer {
         offlineCtx.startRendering();
         source.start(0);
         this.audioBuffer = [];
+
+        // Silence detection
+        this.silenceFrameCount = 0;
       }
       else {
         // hold 1 frame
         statusHTML.innerHTML = "Say Something..."
         this.audioBuffer = streamBuffer.slice();
+        this.silenceFrameCount++;
+        if(this.silenceFrameCount > 10) {
+          const onSlienceEvent = new CustomEvent("onslience");
+          document.dispatchEvent(onSlienceEvent);
+          this.silenceFrameCount = 0;
+        }
       }
     }
 
