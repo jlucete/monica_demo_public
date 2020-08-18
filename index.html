@@ -134,7 +134,7 @@
             <section class="resume-section" id="video">
                 <div class="resume-section-content">
                     <h2 class="mb-5">Model in action</h2>
-                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="d-flex flex-column flex-md-row justify-content-between">
                         <div class="flex-grow-1">
                             <!-- Video title
                             <h3 class="mb-0">title of video</h3>
@@ -149,7 +149,7 @@
                                 Sorry, your browser doesn't support embedded videos.
                             </video>-->
                             <!-- Youtube player-->
-                            <div id="player"></div>
+                            <div id="player" style="max-height: 285px; max-width: 500px;"></div>
                         </div>
                     </div>
                 </div>
@@ -158,7 +158,7 @@
             <!-- Game-->
             <section class="resume-section" id="game">
                 <div class="resume-section-content">
-                    <h2 class="mb-5">Try it out</h2>
+                    <h2 class="mb-2">Try it out</h2>
                     <ul class="list-inline">
                         <li class="list-inline-item">
                             <ul class="list-inline">
@@ -179,35 +179,35 @@
                                 <li class="list-inline-item"><a class="btn btn-primary" id="transformer">Transformer</a></li>
                                 -->
                             </ul>
-                            <div class="list-inline pt-3" style="height: 3rem">
-                                <div class="progress mt-3" style="width: 100%; display: none">
+                            <div class="list-inline pt-2" style="height: 3rem">
+                                <div class="progress mt-2" style="width: 100%; display: none">
                                     <div class="progress-bar progress-bar-striped progress-bar-animated" id="loadModelProgressBar"></div>
                                 </div>
-                                <div class="alert alert-success fade show" role="alert" style="display: none" id="loadModelSuccessAlert">
-                                    <strong>Complete!</strong> Loaded model size is <strong id="loadModelSize">50MB</strong>.
+                                <div class="alert alert-success fade show" role="alert" style="display: none; padding: 0.4rem; padding-left: 1rem;" id="loadModelSuccessAlert">
+                                    <strong> Complete!</strong> Loaded model size is <strong id="loadModelSize">50MB</strong>.
                                 </div>
                             </div>
-                            <ul class="list-inline mt-4">
+                            <ul class="list-inline mt-1">
                                 <li class="list-inline-item"><div class="subheading">Chess</div></li>
                                 <li class="list-inline-item"><i class="far fa-question-circle" style="font-size: 1.5rem;" data-toggle="tooltip" data-placement="top" data-original-title="Awesooooooome tooltip about ChessBoard"></i></li>
                             </ul>
                             <ul class="list-inline">
                                 <li class="list-inline-item">
-                                    <div id="myBoard" style="width: 400px"></div>
+                                    <div id="myBoard" style="width: 90vw; max-width:350px"></div>
                                 </li>
                                 <li class="list-inline-item" style="vertical-align: top;">
                                     <ul class="fa-ul">
-                                        <li class="mb-3"><h5 style="color: gray;">Available commands</h5></li>
-                                        <ul>
-                                            <li><p>command1</p></li>
-                                            <li><p>command2</p></li>
-                                            <li><p>command3</p></li>
-                                            <li><p>command4</p></li>
-                                            <li><p>command5</p></li>
-                                            <li><p>command6</p></li>
+                                        <li class="mb-0"><h5 style="color: gray;">Available commands</h5></li>
+                                        <ul class="mb-3">
+                                            <li><p style="margin-bottom: 0.2rem;">command1</p></li>
+                                            <li><p style="margin-bottom: 0.2rem;">command2</p></li>
+                                            <li><p style="margin-bottom: 0.2rem;">command3</p></li>
+                                            <li><p style="margin-bottom: 0.2rem;">command4</p></li>
+                                            <li><p style="margin-bottom: 0.2rem;">command5</p></li>
+                                            <li><p style="margin-bottom: 0.2rem;">command6</p></li>
                                         </ul>
                                         <li class="mb-3"><h5 style="color: gray;">Recognition result</h5></li>
-                                        <li class="ml-4" id="recogResult"><p>None</p></li>
+                                        <li class="ml-4"><p style="margin-bottom: 0.1rem;" id="recogResult">None</p></li>
                                         <li class="ml-4"><p style="font-size: 0.75rem !important;">Recognition Latency: <strong id="recogLatency">0ms</strong></p></li>
                                     </ul>
                                 </li>
@@ -216,13 +216,15 @@
                                 <li class="list-inline-item">
                                     <a class="btn btn-primary" id="gameStart">Game Start</a>
                                 </li>
+                                <li class="list-inline-item">
+                                  <div class="alert alert-warning fade show" role="alert" id="gameStartFailAlert" style="display: none; padding: 0.4rem; padding-left: 1rem; padding-right: 1rem;">
+                                    <strong>Error!</strong> Complete the loading model first.
+                                  </div>
+                                </li>
                                 <li class="list-inline-item pl-2">
                                     <p id="recogStatus"></p>
                                 </li>
                             </ul>
-                            <div class="alert alert-warning fade show" role="alert" id="gameStartFailAlert" style="display: none">
-                                <strong>Error!</strong> Complete the loading model first.
-                            </div>
                         </li>
                     </ul>
                 </div>
