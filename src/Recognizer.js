@@ -94,7 +94,7 @@ class Recognizer {
         this.listenStreamSize = 4096;
 
         // Silence Detection setting
-        this.threshold = 0.01;
+        this.threshold = 0.0;
         this.thresholdAlpha = 10;
         this.silenceFrameCount = 0;
         this.silenceFrameLimit = 10; // this.listenStreamSize*this.silenceFrameLimit/this.listenSampleRate === silence time limit, 10 frame => about 1 sec.
