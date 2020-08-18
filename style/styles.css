@@ -4985,7 +4985,7 @@ a.badge-dark:focus, a.badge-dark.focus {
   text-align: center;
   white-space: nowrap;
   background-color: #bd5d38;
-  transition: width 0.1s ease;
+  transition: width 0.6s ease;
   /*
   0.6s
   */
