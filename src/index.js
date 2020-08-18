@@ -78,17 +78,13 @@ recognizer.onStartPrediction = function() {
   t0 = performance.now();
 }
 
-
-let totalResult = "";
-
 recognizer.onResult = function(e) {
     onProcess = false;
     if (e.detail.result === ""){
         return;
     }
     t1 = performance.now();
-    totalResult += " " + e.detail.result;
-    resultElem.innerHTML = `${totalResult}`;
+    resultElem.innerHTML = `${e.detail.result}`;
     latencyElem.innerHTML = `${Math.round(t1-t0)}ms`;
     // TODO: Intend detection.
 }
