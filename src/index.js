@@ -1,44 +1,72 @@
 'use strict';
-// step1. selectModel(modelName) == loadModel(modelName)&loadDictionary(modelName)
-
-// step2. predictSingleAudio(audio) == loadAudio(filePath) -> processAudio(audioBuffer) -> predict(melSpectrogram)
-
-// step3. listen()
 
 const recognizer = new Recognizer();
 
 
-let monicaButton = document.getElementById("monicaBtn");
-let transformerButton = document.getElementById("transformerBtn");
-
-monicaButton.onclick = () => {
-  __selectModel('monica');
+/**
+ * Select Model
+ */
+let monicaBtn = document.getElementById('monica');
+let transformerBtn = document.getElementById('transformer');
+monicaBtn.onclick = function () {
+    __selectModel('monica');
 }
-transformerButton.onclick = () =>{
-  __selectModel('transformer');
+transformerBtn.onclick = function () {
+    __selectModel('transformer');
 }
-
 
 function __selectModel(modelName) {
-  document.getElementById('selectModelStatus').innerHTML = `Loading ${modelName}...`;
-  recognizer.selectModel(modelName)
-    .then(() => {
-    document.getElementById('selectModelStatus').innerHTML = `Loading complete!`
-    })
-    .catch(()=>{
-    document.getElementById('selectModelStatus').innerHTML = `Loading failed`
-  });
-
+    $('#loadModelSuccessAlert').hide();
+    $('.progress').show();
+    $('#loadModelProgressBar').css("width",`0%`);
+    recognizer.selectModel(modelName);
 }
 
-stopButton.onclick = () => {
-  if(recognizer.model === null){
-    statusElem.innerHTML = 'Complete the loading model first!';
-    return;
-  }
-  statusElem.innerHTML = 'Stop Listening';
-  recognizer.stopListen();
+recognizer.onProgress = function (e) {
+    $('#loadModelProgressBar').css("width",`${e*100}%`);
+
+    if(e === 1) {
+        //$('.progress').hide();
+        Promise.all([recognizer.dictionary, recognizer.model])
+        .then((result)=>{
+            $('.progress').hide();
+            $('#loadModelSize').html(`${Math.round(result[1].artifacts.weightData.byteLength/(10**4))/100}MB`);
+            $('#loadModelSuccessAlert').show();
+        })
+        return;
+    }
 }
+
+/**
+ * Game Start
+ */
+let startBtn = document.getElementById('gameStart');
+
+let statusElem = document.getElementById('recogStatus');
+let resultElem = document.getElementById('recogResult');
+let latencyElem = document.getElementById('recogLatency');
+
+
+startBtn.onclick = function () {
+    if(recognizer.model === null) {
+        $('#gameStartFailAlert').show();
+        return;
+    }
+    $('#gameStartFailAlert').hide();
+    if(startBtn.innerHTML === "Game Start"){
+        startBtn.innerHTML = "Game Stop";
+        recognizer.startListen();
+    }
+    else {
+        startBtn.innerHTML = "Game Start";
+        statusElem.innerHTML = "";
+        recognizer.stopListen();
+    }
+}
+
+/**
+ * Recognize
+ */
 
 let onProcess = false;
 let t0, t1;
@@ -54,42 +82,23 @@ recognizer.onStartPrediction = function() {
 let totalResult = "";
 
 recognizer.onResult = function(e) {
-  t1 = performance.now();
-  console.log(`Predict: ${e.detail.result}`);
-  if (e.detail.result !== ""){
+    onProcess = false;
+    if (e.detail.result === ""){
+        return;
+    }
+    t1 = performance.now();
     totalResult += " " + e.detail.result;
-    resultElem.innerHTML = `Did you said "${totalResult} " ?`;
-    document.getElementById('recogTime').innerHTML = `Latency: ${Math.round(t1-t0)}ms`;
-  }
-  onProcess = false;
-  // TODO: Intend detection.
+    resultElem.innerHTML = `${totalResult}`;
+    latencyElem.innerHTML = `${Math.round(t1-t0)}ms`;
+    // TODO: Intend detection.
 }
 
-recognizer.onSilence = function() {
-  totalResult = "";
+recognizer.onSilence = ()=> {
+    statusElem.innerHTML = "Say Something...";
 }
 
-recognizer.onListen = function() {
-  if (!onProcess){
-    statusElem.innerHTML = `Listening...`;
-  }
-}
-
-
-
-/**
- * Intend detection using cosine similarity.
- * @param {String} inputStr Single command
- * @param {Array<String>} commandSet Set of command
- * @return {String} command to execute
- *
- */
-function intendDetect(inputStr, commandSet) {
-  // TODO: Implement
-  // TODO: Calculate cosine similarity
-
-}
-
-function execCommand(commandStr) {
-
+recognizer.onListen = () => {
+    if(!onProcess) {
+        statusElem.innerHTML = "Listening...";
+    }
 }

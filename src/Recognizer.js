@@ -6,7 +6,7 @@
  *
  * [On browser Audio Recognizer]
  * Purpose:
- *  - Model comparison ( Available models are transformer, vggbLSTM, monica )
+ *  - Model comparison ( Available models are transformer, monica )
  *  - On browser speech recognition ( i.e. without communication with server )
  *
  * Usage:
@@ -52,7 +52,8 @@ let AudioContext = window.AudioContext || window.webkitAudioContext;
 
 let MINLEN = {
   "sample": 187,
-  "monica": 650
+  "monica": 650,
+  "transformer": 650,
 }
 
 class Recognizer {
@@ -72,6 +73,7 @@ class Recognizer {
         this.model = null;  // ! Promise
         this.dictionary = null; // ! Promise
         this.minLength = null;
+        this.onProgress = null;
 
         // Prediction setting
         this.result = null; // ! Promise
@@ -89,8 +91,15 @@ class Recognizer {
         this.listenProcessor = null;
         this.listenAudioCtx = null;
         this.listenSampleRate = 44100;
-        this.threshold = 0.01;
         this.listenStreamSize = 4096;
+
+        // Silence Detection setting
+        this.threshold = 0.01;
+        this.thresholdAlpha = 10;
+        this.silenceFrameCount = 0;
+        this.silenceFrameLimit = 10; // this.listenStreamSize*this.silenceFrameLimit/this.listenSampleRate === silence time limit, 10 frame => about 1 sec.
+        this.isInitialized = false;
+        this.isSilence = true;
 
         // Event obj for listen.
         this.onResult = null;
@@ -98,7 +107,6 @@ class Recognizer {
         this.onListen = null;
         this.onSilence = null;
 
-        this.silenceFrameCount = 0;
 
         // debug
         this.resultArray = [];
@@ -130,8 +138,8 @@ class Recognizer {
         return;
       }
       this.minLength = MINLEN[modelName];
-      this.model = this.loadModel(modelName);
       this.dictionary = this.loadDictionary(modelName);
+      this.model = this.loadModel(modelName);
       return Promise.all([this.model, this.dictionary]);
     }
 
@@ -139,7 +147,7 @@ class Recognizer {
         console.log("Load model: "+modelName);
         this.modelName = modelName;
         // return tf.loadGraphModel(`https://${window.location.hostname}/monica_demo_public/models/${modelName}/model.json`);
-        this.model = tf.loadGraphModel(`models/${modelName}/model.json`);
+        this.model = tf.loadGraphModel(`models/${modelName}/model.json`, {onProgress: this.onProgress});
         return this.model;
     }
 
@@ -402,7 +410,7 @@ class Recognizer {
       document.addEventListener("onslience", this.onSilence);
 
 
-      navigator.mediaDevices.getUserMedia({audio: true, video: false})
+      navigator.mediaDevices.getUserMedia({audio: true, video: false, noiseSuppression: true})
       .then((stream) => this.__startListen.call(this, stream))
       .catch(this.__failListen);
     }
@@ -425,18 +433,38 @@ class Recognizer {
     }
 
     __handleListenAudioProcess(stream) {
-      // TODO: initializing threshold
+      // FIXME: Dirty implementation.
+
       const streamBuffer = stream.inputBuffer.getChannelData(0);
       // playback
       this.resultArray.push(stream.inputBuffer);
-      let statusHTML = document.getElementById("recogStatus");
 
       let soundSum = 0;
       for (let i = 0; i < streamBuffer.length; i ++) {
         soundSum+=Math.sqrt(streamBuffer[i]*streamBuffer[i]);
       }
       let soundRMS = soundSum/this.listenStreamSize;
+
+      // Initialize threshold
+      if(!this.isInitialized) {
+        // hold 1 frame
+        this.audioBuffer = streamBuffer.slice();
+        // moving average of sound RMS
+        // this.threshold = this.thresholdAlpha*soundRMS + (1-this.thresholdAlpha)*this.threshold;
+        this.threshold += soundRMS
+        this.silenceFrameCount++;
+        if(this.silenceFrameCount > this.silenceFrameLimit) {
+          const onSlienceEvent = new CustomEvent("onslience");
+          document.dispatchEvent(onSlienceEvent);
+          this.silenceFrameCount = 0;
+          this.threshold = this.threshold/this.silenceFrameLimit*this.thresholdAlpha;
+          this.isInitialized = true;
+        }
+        return;
+      }
+
       if(soundRMS > this.threshold){
+        // Save buffer to recognize
         // create event obj for listening
         const onListenEvent = new CustomEvent("onlisten");
         document.dispatchEvent(onListenEvent);
@@ -444,8 +472,11 @@ class Recognizer {
         nextAudioBuffer.set(this.audioBuffer);
         nextAudioBuffer.set(streamBuffer, this.audioBuffer.length);
         this.audioBuffer = nextAudioBuffer;
+        this.silenceFrameCount = 0;
+        this.isSilence = false;
       }
-      else if(this.audioBuffer.length > this.listenStreamSize) {
+      else if(this.audioBuffer.length > this.listenStreamSize & this.isSilence) {
+        // Stop listen and Start recognize
         const nextAudioBuffer = new Float32Array(this.audioBuffer.length+streamBuffer.length);
         nextAudioBuffer.set(this.audioBuffer);
         nextAudioBuffer.set(streamBuffer, this.audioBuffer.length);
@@ -462,7 +493,6 @@ class Recognizer {
         tmpsource.connect(this.listenAudioCtx.destination);
 
           // Thanks for https://stackoverflow.com/questions/27598270/resample-audio-buffer-from-44100-to-16000
-          // Down
         let sourceAudioBuffer = currAudioBuffer;
         // `sourceAudioBuffer` is an AudioBuffer instance of the source audio
         // at the original sample rate.
@@ -488,7 +518,7 @@ class Recognizer {
           let currSource = audioCtx.createBufferSource();
           currSource.buffer = e.renderedBuffer;
           currSource.connect(audioCtx.destination);
-          currSource.start();
+          //currSource.start();
 
           const resampledAudioBuffer = e.renderedBuffer;
           // create event obj for start prediction
@@ -509,18 +539,26 @@ class Recognizer {
         source.start(0);
         this.audioBuffer = [];
 
-        // Silence detection
+        // For Silence detection
         this.silenceFrameCount = 0;
       }
       else {
-        // hold 1 frame
-        statusHTML.innerHTML = "Say Something..."
-        this.audioBuffer = streamBuffer.slice();
+        if(this.isSilence) {
+          // hold 1 frame
+          this.audioBuffer = streamBuffer.slice();
+        }
+        else {
+          const nextAudioBuffer = new Float32Array(this.audioBuffer.length+streamBuffer.length);
+          nextAudioBuffer.set(this.audioBuffer);
+          nextAudioBuffer.set(streamBuffer, this.audioBuffer.length);
+          this.audioBuffer = nextAudioBuffer;
+        }
         this.silenceFrameCount++;
-        if(this.silenceFrameCount > 10) {
+        if(this.silenceFrameCount > this.silenceFrameLimit) {
           const onSlienceEvent = new CustomEvent("onslience");
           document.dispatchEvent(onSlienceEvent);
           this.silenceFrameCount = 0;
+          this.isSilence = true;
         }
       }
     }

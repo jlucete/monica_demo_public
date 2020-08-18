@@ -44,7 +44,7 @@
         -->
 
         <!--Main-->
-        <!--<script defer src="src/index.js"></script>-->
+        <script defer src="src/index.js"></script>
     </head>
     <body id="page-top">
         <!-- Navigation-->
@@ -166,14 +166,29 @@
                                 <li class="list-inline-item"><i class="far fa-question-circle" style="font-size: 1.5rem;" data-toggle="tooltip" data-placement="top" data-original-title="Awesooooooome tooltip about select model"></i></li>
                             </ul>
                             <ul class="list-inline pt-1">
-                                <li class="list-inline-item"><a class="btn btn-primary" onclick="">MONICA</a></li>
-                                <li class="list-inline-item"><a class="btn btn-primary" onclick="">Transformer</a></li>
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                    <label class="btn btn-primary">
+                                      <input type="radio" name="options" id="monica" autocomplete="off"> MONICA
+                                    </label>
+                                    <label class="btn btn-primary">
+                                      <input type="radio" name="options" id="transformer" autocomplete="off"> Transformer
+                                    </label>
+                                </div>
+                                <!--
+                                <li class="list-inline-item"><a class="btn btn-primary" id="monica">MONICA</a></li>
+                                <li class="list-inline-item"><a class="btn btn-primary" id="transformer">Transformer</a></li>
+                                -->
                             </ul>
-                            <div class="progress mt-3" style="width: 400px">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:40%"></div>
+                            <div class="list-inline pt-3" style="height: 3rem">
+                                <div class="progress mt-3" style="width: 100%; display: none">
+                                    <div class="progress-bar progress-bar-striped" id="loadModelProgressBar"></div>
+                                </div>
+                                <div class="alert alert-success fade show" role="alert" style="display: none" id="loadModelSuccessAlert">
+                                    <strong>Complete!</strong> Loaded model size is <strong id="loadModelSize">50MB</strong>.
+                                </div>
                             </div>
                             <ul class="list-inline mt-4">
-                                <li class="list-inline-item"><div class="subheading">ChessBoard</div></li>
+                                <li class="list-inline-item"><div class="subheading">Chess</div></li>
                                 <li class="list-inline-item"><i class="far fa-question-circle" style="font-size: 1.5rem;" data-toggle="tooltip" data-placement="top" data-original-title="Awesooooooome tooltip about ChessBoard"></i></li>
                             </ul>
                             <ul class="list-inline">
@@ -182,8 +197,6 @@
                                 </li>
                                 <li class="list-inline-item" style="vertical-align: top;">
                                     <ul class="fa-ul">
-                                        <li class="mb-3"><h5 style="color: gray;">Recognition result</h5></li>
-                                        <li class="ml-4 mb-5"><p>None</p></li>
                                         <li class="mb-3"><h5 style="color: gray;">Available commands</h5></li>
                                         <ul>
                                             <li><p>command1</p></li>
@@ -193,17 +206,23 @@
                                             <li><p>command5</p></li>
                                             <li><p>command6</p></li>
                                         </ul>
+                                        <li class="mb-3"><h5 style="color: gray;">Recognition result</h5></li>
+                                        <li class="ml-4" id="recogResult"><p>None</p></li>
+                                        <li class="ml-4"><p style="font-size: 0.75rem !important;">Recognition Latency: <strong id="recogLatency">0ms</strong></p></li>
                                     </ul>
                                 </li>
                             </ul>
                             <ul class="list-inline mt-2">
                                 <li class="list-inline-item">
-                                    <a class="btn btn-primary" onclick="">Game Start</a>
+                                    <a class="btn btn-primary" id="gameStart">Game Start</a>
                                 </li>
                                 <li class="list-inline-item pl-2">
-                                    <p>Recognition Latency: 0ms</p>
+                                    <p id="recogStatus"></p>
                                 </li>
                             </ul>
+                            <div class="alert alert-warning fade show" role="alert" id="gameStartFailAlert" style="display: none">
+                                <strong>Error!</strong> Complete the loading model first.
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -322,6 +341,6 @@
         <!-- Third party plugin JS-->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
         <!-- Core theme JS-->
-        <script src="src/scripts.js"></script>
+        <script src="src/AutoScroll.js"></script>
     </body>
 </html>

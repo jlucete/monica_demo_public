@@ -139,22 +139,3 @@ recognizer.onListen = function() {
     statusElem.innerHTML = `Listening...`;
   }
 }
-
-
-
-/**
- * Intend detection using cosine similarity.
- * @param {String} inputStr Single command
- * @param {Array<String>} commandSet Set of command
- * @return {String} command to execute
- *
- */
-function intendDetect(inputStr, commandSet) {
-  // TODO: Implement
-  // TODO: Calculate cosine similarity
-
-}
-
-function execCommand(commandStr) {
-
-}

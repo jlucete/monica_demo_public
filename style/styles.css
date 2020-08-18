@@ -2492,7 +2492,7 @@ fieldset:disabled a.btn {
   border-color: #bd5d38;
 }
 .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle {
-  color: #fff;
+  color: #fff !important;
   background-color: #964a2c;
   border-color: #8c4529;
 }
@@ -4985,7 +4985,10 @@ a.badge-dark:focus, a.badge-dark.focus {
   text-align: center;
   white-space: nowrap;
   background-color: #bd5d38;
-  transition: width 0.6s ease;
+  transition: width 0.1s ease;
+  /*
+  0.6s
+  */
 }
 @media (prefers-reduced-motion: reduce) {
   .progress-bar {
