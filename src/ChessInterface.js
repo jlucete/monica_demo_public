@@ -1,74 +1,139 @@
-let game = new Chess();
-let chessBoard = Chessboard('chessboard', 'start')
+// NOTE: this example uses the chess.js library:
+// https://github.com/jhlywa/chess.js
 
+var board = null
+var game = new Chess()
+var whiteSquareGrey = '#a9a9a9'
+var blackSquareGrey = '#696969'
+let isHighlighted = false;
 
-///////////////// General Game Control
-function startGame() {
-    // TODO: Start the new Game
+function removeGreySquares () {
+  $('#myBoard .square-55d63').css('background', '')
 }
 
-function resetGame() {
-    // TODO: Reset the game
+function greySquare (square) {
+  var $square = $('#myBoard .square-' + square)
+
+  var background = whiteSquareGrey
+  if ($square.hasClass('black-3c85d')) {
+    background = blackSquareGrey
+  }
+
+  $square.css('background', background)
 }
 
-function undoMove() {
-    // TODO: Undo move
-
+var config = {
+  draggable: false,
+  position: 'start',
 }
 
-function autoStart() {
-    // TODO: Automatic play with Math.random()
+board = Chessboard('myBoard', config)
+
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
 }
 
-function autoStop() {
-    // TODO: Stop automatic play.
+function makeRandomMove () {
+    var possibleMoves = game.moves();
+
+    // game over
+    if (possibleMoves.length === 0) return;
+
+    var randomIdx = Math.floor(Math.random() * possibleMoves.length);
+    game.move(possibleMoves[randomIdx]);
+    board.position(game.fen());
 }
 
 
 
 /**
- * Example1. Move A1 to A3
- * Example2. A1, Move to A3
- * Example3. A1 to A3
- * Example4. Move queen to A3.
- * ...
  *
+ * Chess Interface
  *
  */
 
-///////////////// In Game Control
-let CHESS = {
-    KING: 0,
-    QUEEN: 1,
-    ROOK: 2,
-    BISHOP: 3,
-    KNIGHT: 4,
-    PAWN: 5,
-}
-
-let selectedSquares;
-let targetSquares;
-
-// Triggerd by "Coordinate" (i.e. A3) or "Name" (i.e. queen)
-// If there are multiple target, choose one of them by coordinate.
-function selectPiece(target) {
-    // TODO: Select target to move
-    // TODO: Selected target should be highlighted
-    // TODO: Possible movement should be shown
-    currentTarget = target;
-
-    // get squares from piece
-    // do selectSquare() for each square.
-
-}
-
-function selectSquare(square) {
-    // display all possible moves
-}
-
-
-// Triggerd by "Move" or "Take"
 function movePiece(from, to){
-    game.move({from: from, to: to});
+    if(isHighlighted) {
+        removeGreySquares();
+    }
+    // see if the move is legal
+    let move = game.move({
+        from: from,
+        to: to,
+        promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    })
+
+    // illegal move
+    if (move === null) {
+        let moves = game.moves({
+            square: from,
+            verbose: true
+        });
+
+        // exit if there are no moves available for this square
+        if (moves.length === 0) return;
+
+        // highlight the square they moused over
+        greySquare(from);
+
+        // highlight the possible squares for this piece
+        for (let i = 0; i < moves.length; i++) {
+            greySquare(moves[i].to);
+        }
+        isHighlighted = true;
+        return;
+    }
+    isHighlighted = false;
     board.position(game.fen());
+    window.setTimeout(makeRandomMove, 250);
+}
+
+function __StartANewGame() {
+    game = new Chess();
+    board.start();
+}
+
+function __UndoMyLastMove() {
+    game.undo();
+    game.undo();
+    board.position(game.fen());
+}
+
+function __Castling(cmdList) {
+    if(cmdList.includes("KINGSIDE")) {
+        game.move('O-O');
+        board.position(game.fen());
+    }
+    else if (cmdList.includes("QUEENSIDE")) {
+        game.move('O-O-O');
+        board.position(game.fen());
+    }
+}
+
+
+function __MovePiece(cmdList) {
+    const alphabets = "A B C D E F G H".split(" ");
+    const nums = "1 2 3 4 5 6 7 8".split(" ");
+    let from = "";
+    while(!alphabets.includes(parser.cmdDict[cmdList[0]])) {
+        cmdList.shift();
+    }
+    from += parser.cmdDict[cmdList.shift()];
+    while(!nums.includes(parser.cmdDict[cmdList[0]])) {
+        cmdList.shift();
+    }
+    from += parser.cmdDict[cmdList.shift()];
+    let to = "";
+    while(!alphabets.includes(parser.cmdDict[cmdList[0]])) {
+        cmdList.shift();
+    }
+    to += parser.cmdDict[cmdList.shift()];
+    while(!nums.includes(parser.cmdDict[cmdList[0]])) {
+        cmdList.shift();
+    }
+    to += parser.cmdDict[cmdList.shift()];
+
+    if (from && to) {
+        movePiece(from.toLowerCase(), to.toLowerCase());
+    }
 }

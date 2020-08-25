@@ -82,6 +82,7 @@ var config = {
   onMouseoverSquare: onMouseoverSquare,
   onSnapEnd: onSnapEnd
 }
+
 board = Chessboard('myBoard', config)
 
 function getKeyByValue(object, value) {

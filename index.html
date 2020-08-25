@@ -35,13 +35,16 @@
         crossorigin="anonymous"></script>
         <!--chess.js is directly copid from "http://www.willangles.com/projects/chessboard/js/chess.js" because of http/https issue -->
         <script defer src="src/chess.js"></script>
-        <script defer src="src/ChessTest.js"></script>
+        <script defer src="src/ChessInterface.js"></script>
 
         <!--Dynamic Graph for memory monitoring-->
         <!--
         <script defer src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
         <script defer src="src/MemoryMonitor.js"></script>
         -->
+
+        <!--Parser-->
+        <script defer src="src/Parser.js"></script>
 
         <!--Main-->
         <script defer src="src/index.js"></script>
@@ -209,6 +212,7 @@
                                         <li class="mb-3"><h5 style="color: gray;">Recognition result</h5></li>
                                         <li class="ml-4" id="recogResult"><p>None</p></li>
                                         <li class="ml-4"><p style="font-size: 0.75rem !important;">Recognition Latency: <strong id="recogLatency">0ms</strong></p></li>
+                                        <li class="ml-4"><p style="font-size: 0.75rem !important;">Input Audio Length : <strong id="inputAudioLength">0ms</strong></p></li>
                                     </ul>
                                 </li>
                             </ul>

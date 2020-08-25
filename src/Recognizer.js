@@ -260,7 +260,7 @@ class Recognizer {
 
           return this.arr2str(predict_array, dictionary);
       }
-      if(this.modelName === "monica") {
+      if(this.modelName === "monica" || this.modelName === "transformer") {
           let inputTensor = tf.tensor([melSpectrogram.slice(0,650)]);
           let predict_tensor = model.predict(inputTensor);
           let predict_array = Array.from(predict_tensor.dataSync());
@@ -521,8 +521,9 @@ class Recognizer {
           //currSource.start();
 
           const resampledAudioBuffer = e.renderedBuffer;
+          const inputAudioLength = resampledAudioBuffer.length/16000;
           // create event obj for start prediction
-          const onStartEvent = new CustomEvent("onstartprediction");
+          const onStartEvent = new CustomEvent("onstartprediction", {detail: {audioLength: inputAudioLength}});
           document.dispatchEvent(onStartEvent);
 
           // Start prediction

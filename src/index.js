@@ -1,6 +1,7 @@
 'use strict';
 
 const recognizer = new Recognizer();
+const parser = new Parser();
 
 
 /**
@@ -45,6 +46,7 @@ let startBtn = document.getElementById('gameStart');
 let statusElem = document.getElementById('recogStatus');
 let resultElem = document.getElementById('recogResult');
 let latencyElem = document.getElementById('recogLatency');
+let lengthElem = document.getElementById('inputAudioLength');
 
 
 startBtn.onclick = function () {
@@ -71,9 +73,10 @@ startBtn.onclick = function () {
 let onProcess = false;
 let t0, t1;
 
-recognizer.onStartPrediction = function() {
+recognizer.onStartPrediction = function(e) {
   console.log('START RECOG');
   statusElem.innerHTML = `Recognizing...`;
+  lengthElem.innerHTML = `${Math.round(e.detail.audioLength*1000)}ms`;
   onProcess = true;
   t0 = performance.now();
 }
@@ -87,6 +90,8 @@ recognizer.onResult = function(e) {
     resultElem.innerHTML = `${e.detail.result}`;
     latencyElem.innerHTML = `${Math.round(t1-t0)}ms`;
     // TODO: Intend detection.
+    const cmdList = parser.parse(e.detail.result);
+    recogInterface(cmdList);
 }
 
 recognizer.onSilence = ()=> {
@@ -96,5 +101,54 @@ recognizer.onSilence = ()=> {
 recognizer.onListen = () => {
     if(!onProcess) {
         statusElem.innerHTML = "Listening...";
+    }
+}
+
+
+
+
+
+/**
+ * Recog interface
+ */
+
+function recogInterface(cmdList) {
+    if(!cmdList) {
+        return;
+    }
+
+    switch(cmdList[0]) {
+    case 'LOAD':
+        // Load the monical model
+        // Load the transformer model
+        __LoadTheModel(cmdList);
+        break;
+    case 'START':
+        // Start a new game
+        __StartANewGame();
+        break;
+    case 'UNDO':
+        // Undo my last move
+        __UndoMyLastMove();
+        break;
+    case 'CASTLE':
+        // Castle kingside
+        // Castle Queenside
+        __Castling(cmdList);
+        break;
+    default:
+        // A1 to A2
+        // move A1 to A2
+        // A1 capture A2
+        __MovePiece(cmdList);
+    }
+}
+
+function __LoadTheModel(cmdList) {
+    if(cmdList.includes("MONICA")) {
+        __selectModel("monica");
+    }
+    else if(cmdList.includes("TRANSFORMER")) {
+        __selectModel("transformer");
     }
 }
