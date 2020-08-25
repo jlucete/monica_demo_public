@@ -7,6 +7,15 @@ var whiteSquareGrey = '#a9a9a9'
 var blackSquareGrey = '#696969'
 let isHighlighted = false;
 
+const pieceCode = {
+    "PAWN": "P",
+    "KNIGHT": "N",
+    "BISHOP": "B",
+    "ROOK": "R",
+    "QUEEN": "Q",
+    "KING": "K",
+}
+
 function removeGreySquares () {
   $('#myBoard .square-55d63').css('background', '')
 }
@@ -132,5 +141,53 @@ function __MovePiece(cmdList) {
         let from = coord.slice(0,2);
         let to = coord.slice(2,4);
         movePiece(from.toLowerCase(), to.toLowerCase());
+
+        return;
     }
+
+    const pieces = "PAWN KNIGHT BISHOP ROOK QUEEN KING".split(" ");
+    let isPiece = true;
+    isNum = false;
+    let san1 = "";
+    let san2 = "";
+    for(let i =0; i < cmdList.length; i++) {
+        currChar = parser.cmdDict[cmdList[i]];
+        if(isPiece && pieces.includes(currChar)) {
+            san1 += pieceCode[currChar];
+            san2 += pieceCode[currChar] + 'x';
+            isPiece = false;
+        }
+        else if(!isPiece) {
+            if (isNum && nums.includes(currChar)) {
+                san1 += currChar;
+                san2 += currChar;
+                isNum = !isNum;
+            }
+            else if (!isNum && alphabets.includes(currChar)) {
+                san1 += currChar.toLowerCase();
+                san2 += currChar.toLowerCase();
+                isNum = !isNum;
+            }
+        }
+
+        if(san1.length >= 3) {
+            break;
+        }
+    }
+
+    if(san1.startsWith('P')) {
+        san1 = san1.replace('P', '');
+        san2 = san2.replace('P', '');
+    }
+    console.log(`san1: ${san1}`);
+    console.log(`san2: ${san2}`);
+
+    if(!game.move(san1)){
+        if(!game.move(san2)){
+            return;
+        }
+    }
+    board.position(game.fen());
+    window.setTimeout(makeRandomMove, 250);
+
 }
