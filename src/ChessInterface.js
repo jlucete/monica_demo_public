@@ -114,26 +114,23 @@ function __Castling(cmdList) {
 function __MovePiece(cmdList) {
     const alphabets = "A B C D E F G H".split(" ");
     const nums = "1 2 3 4 5 6 7 8".split(" ");
-    let from = "";
-    while(!alphabets.includes(parser.cmdDict[cmdList[0]])) {
-        cmdList.shift();
+    let coord = "";
+    let isNum = false;
+    for(let i = 0;i < cmdList.length; i++) {
+        currChar = parser.cmdDict[cmdList[i]];
+        if(isNum && nums.includes(currChar)) {
+            coord += currChar;
+            isNum = false;
+        }
+        else if(!isNum && alphabets.includes(currChar)) {
+            coord += currChar;
+            isNum = true;
+        }
     }
-    from += parser.cmdDict[cmdList.shift()];
-    while(!nums.includes(parser.cmdDict[cmdList[0]])) {
-        cmdList.shift();
-    }
-    from += parser.cmdDict[cmdList.shift()];
-    let to = "";
-    while(!alphabets.includes(parser.cmdDict[cmdList[0]])) {
-        cmdList.shift();
-    }
-    to += parser.cmdDict[cmdList.shift()];
-    while(!nums.includes(parser.cmdDict[cmdList[0]])) {
-        cmdList.shift();
-    }
-    to += parser.cmdDict[cmdList.shift()];
-
-    if (from && to) {
+    console.log(coord);
+    if (coord.length >= 4) {
+        let from = coord.slice(0,2);
+        let to = coord.slice(2,4);
         movePiece(from.toLowerCase(), to.toLowerCase());
     }
 }

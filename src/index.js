@@ -91,6 +91,7 @@ recognizer.onResult = function(e) {
     latencyElem.innerHTML = `${Math.round(t1-t0)}ms`;
     // TODO: Intend detection.
     const cmdList = parser.parse(e.detail.result);
+    console.log(cmdList);
     recogInterface(cmdList);
 }
 
