@@ -445,7 +445,7 @@ class Recognizer {
       }
       let soundRMS = soundSum/this.listenStreamSize;
 
-      // Initialize threshold
+      // Initialize threshold and buffer
       if(!this.isInitialized) {
         // hold 1 frame
         this.audioBuffer = streamBuffer.slice();
@@ -454,10 +454,13 @@ class Recognizer {
         this.threshold += soundRMS
         this.silenceFrameCount++;
         if(this.silenceFrameCount > this.silenceFrameLimit) {
+          // Set threshold
           const onSlienceEvent = new CustomEvent("onslience");
           document.dispatchEvent(onSlienceEvent);
           this.silenceFrameCount = 0;
           this.threshold = this.threshold/this.silenceFrameLimit*this.thresholdAlpha;
+
+          // TODO: Initialize buffer and audio context
           this.isInitialized = true;
         }
         return;

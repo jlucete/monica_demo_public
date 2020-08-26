@@ -57,6 +57,7 @@ startBtn.onclick = function () {
     $('#gameStartFailAlert').hide();
     if(startBtn.innerHTML === "Game Start"){
         startBtn.innerHTML = "Game Stop";
+        statusElem.innerHTML = "Initializing..."
         recognizer.startListen();
     }
     else {

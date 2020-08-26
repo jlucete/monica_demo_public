@@ -80,7 +80,7 @@
                     </h1>
                     <div class="subheading mb-5" style="text-transform: none !important;">
                         MONICA: <strong>MO</strong>bile <strong>N</strong>eural vo<strong>I</strong>ce <strong>C</strong>ommand
-                        <strong>A</strong>ssistant for mobile gaming
+                        <strong>A</strong>ssistant for mobile game
                         <!--<a href="mailto:name@email.com">name@email.com</a>-->
                     </div>
                     <p class="lead mb-5"></p>
@@ -109,15 +109,15 @@
                         </p>
                         <p>
                           The biggest problem of ASR in mobile gaming is that users need an immediate response.
-                           This requires a real-time speed on the computational power and storage limited to a mobile phone.
+                           This requires real time speed on the computational power and storage limited to a mobile phone.
                             Most solutions overcome this problem by sending the voice input to a cloud server where a bigger 
-                            computational power calculates the result. However, this is not practical for the gamer due to slower 
+                            computational power calculates the result. However, this is not practical for a gamer due to slower 
                             responses and additional network usage. Is it possible to make a model small enough so that the model 
                             can be inserted into the game itself? Is there a way to apply an on-device solution for mobile gaming?
                         </p>
                         <p>
                           To solve such issues, we created a transformer based model named MONICA . It retains similar recognition 
-                          accuracy comparable to the state of the art ASR methods, yet only uses sixth of the memory and nearly 3 
+                          accuracy comparable to the state of the art ASR methods, yet only uses eleventh of the memory and nearly 8 
                           times as fast on a typical mobile phone. With MONICA, an on-device approach to speak recognition in gaming 
                           is possible. This demonstration will show a web based interactive performance of MONICA and the showcase of 
                           MONICA being integrated into A3: Still Alive, a Battle-Royale MMORPG released and serviced by Netmarble of 
@@ -142,15 +142,15 @@
                   <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
                       <p>Following the idea of cross-layer parameter sharing proposed in ALBERT,
-                        MONICA shares both feed-forward network and attention parameters across all layers for transformer
-                        encoders of acoustic model. To speed up inference time, MONICA takes the outputs of encoders
-                        into Connectionist Temporal Classification (CTC) directly without decoder blocks. We choose
+                        MONICA shares both feed-forward network and attention parameters across all layers for the transformer encoders of the acoustic model.
+                         To speed up inference time, MONICA takes the outputs of encoders
+                        into Connectionist Temporal Classification (CTC) directly without decoder blocks. We chose
                         TensorFlow Lite from Google’s Firebase SDK as our inference engine.</p>
                       <p>
                         We perform experiments on
-                        the Librispeech corpus to evaluate the effectiveness of MONICA compare to Speech-Transformer
+                        the Librispeech corpus to evaluate the effectiveness of MONICA compare to the Speech-Transformer
                         . To further reduce network memory, we modified two parameters in encoders: both convolutional
-                        filter size and attention size changed from 512 to 256. For a fair comparison, all hyper parameters
+                        filter size and attention size is changed from 512 to 256. For fair comparison, all hyper parameters
                         of two models are set to be the same, both models are trained with 120 epochs, batch size of 32,
                         word-piece size of 2500 and 6 encoders with 2048 units.
                       </p>
@@ -165,7 +165,7 @@
                     <h2 class="mb-5">Size and Performance</h2>
                     <div class="d-flex flex-column flex-md-row justify-content-center mb-5">
                       <div class="flex-grow-1">
-                        <p>The Monica model show similar recognition accuracy compared to the state of the art ASR methods, but with only ⅙ memory usage and 3 times faster on a mobile CPU.</p>
+                        <p>The Monica model show similar recognition accuracy compared to the state of the art ASR methods, but with only ⅒ memory usage and 8 times faster on a mobile CPU.</p>
                         <div style="max-width: 700px;">
                           <img src="img/SizeAndPerformance.JPG" class="img-fluid rounded mt-5">
                         </div>
@@ -246,8 +246,8 @@
                                         </ul>
                                         <li class="mb-3"><h5 style="color: gray;">Recognition result</h5></li>
                                         <li class="ml-4"><a style="margin-bottom: 0.1rem;" id="recogResult">None</a></li>
-                                        <li class="ml-4"><a style="font-size: 0.75rem !important; margin-bottom: 0.1rem;">Recognition Latency: <strong id="recogLatency">0ms</strong></a></li>
-                                        <li class="ml-4"><a style="font-size: 0.75rem !important;">Input Audio Length : <strong id="inputAudioLength">0ms</strong></a></li>
+                                        <li class="ml-4"><a style="font-size: 0.75rem !important; margin-bottom: 0.1rem;">Input Audio Length : <strong id="inputAudioLength">0ms</strong></a></li>
+                                        <li class="ml-4"><a style="font-size: 0.75rem !important;">Recognition Latency: <strong id="recogLatency">0ms</strong></a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -261,7 +261,7 @@
                                   </div>
                                 </li>
                                 <li class="list-inline-item pl-2">
-                                    <p id="recogStatus"></p>
+                                    <a id="recogStatus"></a>
                                 </li>
                             </ul>
                         </li>
@@ -275,10 +275,10 @@
                     <h2 class="mb-5">Test App</h2>
                     <p class="mb-5">We provide a mobile application, so that any one
                       could test the effectiveness of MONICA. After installation, please press the Record button then test
-                      any A3 voice commands listed in our demo web page. When MONICA correctly recognize voice
-                      command, the ball in the center will be turn into green light. The inference score, processing time and
-                      memory usage is shown to confirm the effectiveness of MONICA. Unfortunately we only release test
-                      application for Android users for now, and we keep on working to provide iOS counterpart very soon</p>
+                      any A3 voice commands listed in our demo web page.  When MONICA recognizes a correct voice command,
+                      the ball in the center will turn into a green light. The inference score, processing time and
+                      memory usage is shown to confirm the effectiveness of MONICA. Unfortunately we only release a test application for Android for now. 
+                     We will provide an iOS counterpart very soon</p>
                     <a class="btn btn-primary" id="downloadBtn">Download App</a>
                 </div>
             </section>
