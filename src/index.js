@@ -159,7 +159,7 @@ function __LoadTheModel(cmdList) {
  * Download App
  */
 
-let downloadBtn = document.getElementById('download');
+let downloadBtn = document.getElementById('downloadBtn');
 downloadBtn.onclick = function () {
     window.location.assign('download/DemoApplication.apk');
 }
