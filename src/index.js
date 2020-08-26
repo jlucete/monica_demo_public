@@ -153,3 +153,13 @@ function __LoadTheModel(cmdList) {
         __selectModel("transformer");
     }
 }
+
+
+/**
+ * Download App
+ */
+
+let downloadBtn = document.getElementById('download');
+downloadBtn.onclick = function () {
+    window.location.assign('download/DemoApplication.apk');
+}
