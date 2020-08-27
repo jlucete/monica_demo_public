@@ -58,6 +58,7 @@ startBtn.onclick = function () {
     if(startBtn.innerHTML === "Game Start"){
         startBtn.innerHTML = "Game Stop";
         statusElem.innerHTML = "Initializing..."
+        recognizer.isInitialized = false;
         recognizer.startListen();
     }
     else {
