@@ -53,7 +53,7 @@ let AudioContext = window.AudioContext || window.webkitAudioContext;
 let MINLEN = {
   "sample": 187,
   "monica": 650,
-  "transformer": 650,
+  "transformer": 187,
 }
 
 class Recognizer {
@@ -240,23 +240,13 @@ class Recognizer {
     }
 
     predict(model, dictionary, melSpectrogram) {
-      if(this.modelName === "sample") {
-          // sample model input require [-1, 187, 80]
-          let inputTensor;
-          if (melSpectrogram.length < 187) {
-            let originalTensor = tf.tensor(melSpectrogram);
-            let paddingTensor = tf.fill([187-melSpectrogram.length,80],-13.8);
-            inputTensor = originalTensor.concat(paddingTensor);
-            inputTensor = inputTensor.reshape([-1,187,80]);
-          }
-          else {
-            // Use only first 187 frames.
-            inputTensor = tf.tensor([melSpectrogram.slice(0,187)]);
-          }
-
-
+      if(this.modelName === "transformer") {
+          // transformer model input require [-1, 187, 80]
+          let inputTensor = tf.tensor([melSpectrogram.slice(0,187)]);
           let predict_tensor = model.predict(inputTensor);
           let predict_array = Array.from(predict_tensor.dataSync());
+          inputTensor.dispose();
+          predict_tensor.dispose();
 
           return this.arr2str(predict_array, dictionary);
       }
@@ -667,7 +657,7 @@ class Recognizer {
      * Padding Zero
      */
     zeroPadding(buffer){
-      const minBufferLength = Math.max(this.minLength*(this.fftSize/2 + 1), buffer.length+256);
+      const minBufferLength = Math.max((this.minLength+1)*(this.fftSize/2 + 1), buffer.length+256);
       let padded_buf = new Float32Array(minBufferLength).fill(0);
       padded_buf.set(buffer, 256);
       return padded_buf;
