@@ -52,7 +52,7 @@ let AudioContext = window.AudioContext || window.webkitAudioContext;
 
 let MINLEN = {
   "sample": 187,
-  "monica": 650,
+  "monica": 187,
   "transformer": 187,
 }
 
@@ -250,8 +250,8 @@ class Recognizer {
 
           return this.arr2str(predict_array, dictionary);
       }
-      if(this.modelName === "monica" || this.modelName === "transformer") {
-          let inputTensor = tf.tensor([melSpectrogram.slice(0,650)]);
+      if(this.modelName === "monica") {
+          let inputTensor = tf.tensor([melSpectrogram.slice(0,187)]);
           let predict_tensor = model.predict(inputTensor);
           let predict_array = Array.from(predict_tensor.dataSync());
           inputTensor.dispose();
