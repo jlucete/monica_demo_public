@@ -143,18 +143,19 @@
                   <h2 class="mb-5">How it works</h2>
                   <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
                     <div class="flex-grow-1">
-                      <p>Following the idea of cross-layer parameter sharing proposed in ALBERT,
-                        MONICA shares both feed-forward network and attention parameters across all layers for the transformer encoders of the acoustic model.
-                         To speed up inference time, MONICA takes the outputs of encoders
-                        into Connectionist Temporal Classification (CTC) directly without decoder blocks. We chose
-                        TensorFlow Lite from Google’s Firebase SDK as our inference engine.</p>
+                      <p> Recently ALBERT
+                        was introduced to reduce memory consumption and speed up training time for language representation
+                        tasks. Following the idea of cross-layer parameter sharing proposed in ALBERT, MONICA shares
+                        both feed-forward network and attention parameters across all layers for the transformer encoders of
+                        the acoustic model. We choose TensorFlow Lite from Google’s Firebase SDK as our inference
+                        engine for its optimized operations designed for mobile devices.</p>
                       <p>
-                        We perform experiments on
-                        the Librispeech corpus to evaluate the effectiveness of MONICA compare to the Speech-Transformer
-                        . To further reduce network memory, we modified two parameters in encoders: both convolutional
-                        filter size and attention size is changed from 512 to 256. For fair comparison, all hyper parameters
-                        of two models are set to be the same, both models are trained with 120 epochs, batch size of 32,
-                        word-piece size of 2500 and 6 encoders with 2048 units.
+                        We perform experiments on the Librispeech corpus to evaluate the effectiveness of MONICA
+                        compare to Speech-Transformer. To further reduce network memory, we modified two parameters
+                        in the encoders: both convolutional filter size and attention size was changed from 512 to 256. For
+                        a fair comparison, all hyper parameters of the two models are set to be the same. Both models
+                        are trained with 168 epochs, batch size of 32, word-piece size of 2500 and 12 encoder layers with
+                        2048 units.
                       </p>
                     </div>
                   </div>
@@ -167,7 +168,11 @@
                     <h2 class="mb-5">Size and Performance</h2>
                     <div class="d-flex flex-column flex-md-row justify-content-center mb-5">
                       <div class="flex-grow-1">
-                        <p>The Monica model show similar recognition accuracy compared to the state of the art ASR methods, but with only ⅒ memory usage and 8 times faster on a mobile CPU.</p>
+                        <p>
+                          The performance of MONICA and Speech39 Transformer is measured by word error rate (WER). As we can see from Table 1, MONICA shows
+                          about 4% WER degradation in both clean and noisy test dataset despite having only 10% parameters
+                          compare to Speech-Transformer.
+                        </p>
                         <div style="max-width: 700px;">
                           <img src="img/SizeAndPerformance.JPG" class="img-fluid rounded mt-5">
                         </div>
@@ -277,12 +282,14 @@
             <section class="resume-section" id="download">
                 <div class="resume-section-content">
                     <h2 class="mb-5">Test App</h2>
-                    <p class="mb-5">We provide a mobile application, so that any one
-                      could test the effectiveness of MONICA. After installation, please press the Record button then test
-                      any A3 voice commands listed in our demo web page.  When MONICA recognizes a correct voice command,
-                      the ball in the center will turn into a green light. The inference score, processing time and
-                      memory usage is shown to confirm the effectiveness of MONICA. Unfortunately we only release a test application for Android for now. 
-                     We will provide an iOS counterpart very soon.</p>
+                    <p class="mb-5">
+                     We provide a mobile application, so that any one
+                     could test the effectiveness of MONICA. After installation, press the Record button, then test any
+                     A3 voice commands listed on our demonstration web page. When MONICA correctly recognize
+                     a voice command, the ball in the center will turn green. The inference score, processing time and
+                     memory usage is shown to confirm the effectiveness of MONICA. Only an Android test application
+                     is provided, while an iOS counterpart will be released soon.
+                    </p>
                     <a class="btn btn-primary" id="downloadBtn">Download App</a>
                 </div>
             </section>
