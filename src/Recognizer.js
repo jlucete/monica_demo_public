@@ -240,25 +240,13 @@ class Recognizer {
     }
 
     predict(model, dictionary, melSpectrogram) {
-      if(this.modelName === "transformer") {
-          // transformer model input require [-1, 187, 80]
-          let inputTensor = tf.tensor([melSpectrogram.slice(0,187)]);
-          let predict_tensor = model.predict(inputTensor);
-          let predict_array = Array.from(predict_tensor.dataSync());
-          inputTensor.dispose();
-          predict_tensor.dispose();
+      let inputTensor = tf.tensor([melSpectrogram.slice(0,MINLEN[this.modelName])]);
+      let predict_tensor = model.predict(inputTensor);
+      let predict_array = Array.from(predict_tensor.dataSync());
+      inputTensor.dispose();
+      predict_tensor.dispose();
 
-          return this.arr2str(predict_array, dictionary);
-      }
-      if(this.modelName === "monica") {
-          let inputTensor = tf.tensor([melSpectrogram.slice(0,187)]);
-          let predict_tensor = model.predict(inputTensor);
-          let predict_array = Array.from(predict_tensor.dataSync());
-          inputTensor.dispose();
-          predict_tensor.dispose();
-
-          return this.arr2str(predict_array, dictionary);
-      }
+      return this.arr2str(predict_array, dictionary);
     }
 
     /**
