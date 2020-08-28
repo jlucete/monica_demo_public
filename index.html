@@ -172,10 +172,17 @@
                         <p>
                           The performance of MONICA and Speech Transformer is measured by word error rate (WER). As we can see from Table 1, MONICA shows
                           about 4% WER degradation in both clean and noisy test dataset despite having only 10% parameters
-                          compare to Speech-Transformer.
+                          compare to Speech-Transformer.                        
+                        </p>
+                        <p>
+                        We measure both memory usage and inference time in Samsung Galaxy S8. 
+                        MONICA only costs 27MB memory with dynamic 8-bit quantization provided by Tensorflow Lite.
+                         Speech-Transformer needs at least 199MB, which is relative too big to be integrated into mobile
+                          games even with 8-bit quantization. In Galaxy S8 the average inference time of MONICA is 263ms
+                           for each 3-second voice command. This is more than 5 times faster than Speech-Transformer.
                         </p>
                         <div style="max-width: 700px;">
-                          <img src="img/SizeAndPerformance.JPG" class="img-fluid rounded mt-5">
+                          <img src="img/SizeAndPerformance.JPG" class="img-fluid rounded mt-3">
                         </div>
                       </div>
                     </div>
@@ -372,8 +379,8 @@
                             -->
                             <!--Grid column-->
                         </div>
-                        <p class="text-md-left w-responsive mx-auto mb-5"><strong>E-mail1 </strong>youshin.lim@netmarble.com</p>
-                        <p class="text-md-left w-responsive mx-auto mb-5"><strong>E-mail2 </strong>yhong@netmarble.com</p>
+                        <p class="text-md-left w-responsive mx-auto"><strong>E-mail1 </strong>youshin.lim@netmarble.com</p>
+                        <p class="text-md-left w-responsive mx-auto"><strong>E-mail2 </strong>yhong@netmarble.com</p>
                         <p class="text-md-left w-responsive mx-auto mb-5"><strong>E-mail3 </strong>ethan.an@netmarble.com</p>
                     </section>
                     <!--Section: Contact v.2-->
