@@ -290,7 +290,7 @@ class Recognizer {
       __startRecord(stream) {
         this.recordStream = stream;
         this.recordSource = this.audioCtx.createMediaStreamSource(stream);
-        this.recordProcessor = this.audioCtx.createScriptProcessor(this.listenStreamSize, 1, 1); // 47872 = (fftSize/2) * modelInputLength
+        this.recordProcessor = this.audioCtx.createScriptProcessor(256, 1, 1); // 47872 = (fftSize/2) * modelInputLength
 
 
         this.recordSource.connect(this.recordProcessor);
