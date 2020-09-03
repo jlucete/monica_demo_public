@@ -52,7 +52,7 @@ let AudioContext = window.AudioContext || window.webkitAudioContext;
 
 let MINLEN = {
   "sample": 187,
-  "monica": 187,
+  "monica": 650,
   "transformer": 187,
 }
 
@@ -83,6 +83,7 @@ class Recognizer {
         this.recordStream = null;
         this.recordSource = null;
         this.recordProcessor = null;
+        this.recordTimeout = 3500; // ms
 
         // Listening setting
         this.isListen = false;
@@ -275,6 +276,12 @@ class Recognizer {
         });
         this.audioBuffer = [];
 
+
+        // add EventListener for result
+        document.addEventListener("onresult", this.onResult);
+        document.addEventListener("onstartprediction", this.onStartPrediction);
+        document.addEventListener("onlisten", this.onListen);
+
         navigator.mediaDevices.getUserMedia({audio: true, video: false})
         .then((stream) => this.__startRecord.call(this, stream))
         .catch(this.__failRecord);
@@ -291,7 +298,12 @@ class Recognizer {
 
         this.recordProcessor.onaudioprocess = this.__handleAudioProcess.bind(this);
 
-        setTimeout(this.__stopRecord.bind(this), 4000);
+
+        // create event obj for listening
+        const onListenEvent = new CustomEvent("onlisten");
+        document.dispatchEvent(onListenEvent);
+
+        setTimeout(this.__stopRecord.bind(this), this.recordTimeout);
         this.isRecord = true;
       }
 
@@ -343,7 +355,19 @@ class Recognizer {
       this.recordProcessor = null;
 
       this.isRecord = false;
+
+      // create event obj for start prediction
+      const onStartEvent = new CustomEvent("onstartprediction", {detail: {audioLength: this.audioBuffer.length/16000}});
+      document.dispatchEvent(onStartEvent);
+
+      // Start prediction
       this.result = this.predictAudioBuffer(this.audioBuffer);
+      this.result.then(function (resultStr) {
+        // create event obj for listen
+        const onResultEvent = new CustomEvent("onresult", {detail: {result: resultStr}});
+        document.dispatchEvent(onResultEvent);
+        console.log
+      });
 
       return this.result;
     }
@@ -404,6 +428,7 @@ class Recognizer {
       this.listenProcessor.onaudioprocess = this.__handleListenAudioProcess.bind(this);
 
       this.isListen = true;
+
     }
 
     __failListen(e){

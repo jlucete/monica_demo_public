@@ -42,6 +42,7 @@ recognizer.onProgress = function (e) {
  * Game Start
  */
 let startBtn = document.getElementById('gameStart');
+let recordBtn = document.getElementById('recordBtn');
 
 let statusElem = document.getElementById('recogStatus');
 let resultElem = document.getElementById('recogResult');
@@ -53,6 +54,11 @@ startBtn.onclick = function () {
     if(recognizer.model === null) {
         $('#gameStartFailAlert').show();
         return;
+    }
+    if(recordBtn.innerHTML === "Record Stop") {
+      recordBtn.innerHTML = "Record Start";
+      statusElem.innerHTML = "";
+      recognizer.stopRecord();
     }
     $('#gameStartFailAlert').hide();
     if(startBtn.innerHTML === "Game Start"){
@@ -66,6 +72,33 @@ startBtn.onclick = function () {
         statusElem.innerHTML = "";
         recognizer.stopListen();
     }
+}
+
+
+recognizer.recordTimeout = 3000 // ms
+
+recordBtn.onclick = function () {
+  if(recognizer.model === null) {
+      $('#gameStartFailAlert').show();
+      return;
+  }
+  if(startBtn.innerHTML === "Game Stop") {
+      startBtn.innerHTML = "Game Start";
+      statusElem.innerHTML = "";
+      recognizer.stopListen();
+  }
+  $('#gameStartFailAlert').hide();
+  if(recordBtn.innerHTML === "Record Start"){
+      recordBtn.innerHTML = "Record Stop";
+      statusElem.innerHTML = "Initializing..."
+      recognizer.isInitialized = false;
+      recognizer.startRecord();
+  }
+  else {
+      recordBtn.innerHTML = "Record Start";
+      statusElem.innerHTML = "";
+      recognizer.stopRecord();
+  }
 }
 
 /**
@@ -85,6 +118,11 @@ recognizer.onStartPrediction = function(e) {
 
 recognizer.onResult = function(e) {
     onProcess = false;
+    if (recordBtn.innerHTML === "Record Stop"){
+        recordBtn.innerHTML = "Record Start";
+        statusElem.innerHTML = "";
+        recognizer.stopRecord();
+    }
     if (e.detail.result === ""){
         return;
     }
