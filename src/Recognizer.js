@@ -52,7 +52,7 @@ let AudioContext = window.AudioContext || window.webkitAudioContext;
 
 let MINLEN = {
   "sample": 187,
-  "monica": 650,
+  "monica": 187,
   "transformer": 187,
 }
 
