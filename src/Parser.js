@@ -52,7 +52,18 @@ class Parser {
                 parseResult.push(currResult);
             }
         }
-        return parseResult;
+
+        return this.rule_base_parsing(parseResult);
+        // return parseResult;
+    }
+
+    rule_base_parsing(parseResult){
+        let comm = parseResult.join(" ");
+        
+        comm = comm.replace("KING EIGHT", "KINGSIDE");
+        comm = comm.replace("KING SIGHT", "KINGSIDE");
+
+        return comm.split(" ");
     }
 
 }
