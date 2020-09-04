@@ -56,6 +56,61 @@ let MINLEN = {
   "transformer": 187,
 }
 
+class LMRecognizer{
+
+  constructor(cb_model_load){
+    this.lmModel = null;
+    this.load_model(cb_model_load);
+    this.lmWeight = 0.2;
+  }
+
+  async load_model(cb_model_load){
+    let model = await tf.loadGraphModel(`models/LM/model.json`);
+    this.lmModel = model;
+    if(cb_model_load) cb_model_load();
+  }
+
+  predict(input_data_arr){
+    let inputTensor = tf.tensor(input_data_arr, [5,1], 'int32');
+    let predict_tensor = this.lmModel.predict(inputTensor);
+    let predict_array = Array.from(predict_tensor.dataSync());
+    return predict_array;    
+  }
+
+  predictTotal(idxs, probs){
+    let tmpResult = [];
+    let returnList = [2501, 2501, 2501, 2501, 2501];
+
+    let new_prob = this.predict(returnList);
+
+    for (let i = 0; i < idxs.length; i += 5) {
+      const tok_top5 = idxs.slice(i, i+5);
+      let prob_top5 = probs.slice(i, i+5);
+
+      // if (tok_top5[0] == 0) continue
+
+      for (let i_top = 0; i_top < tok_top5.length; i_top++) {
+        let tok_t = tok_top5[i_top];
+        let am_t = prob_top5[i_top];
+        if (tok_t == 0) continue;
+        let lm_t = new_prob[tok_t] * this.lmWeight;
+        prob_top5[i_top] = am_t + lm_t;
+      }
+      
+      const largest_tok_t_idx = tf.argMax(prob_top5).dataSync()[0];
+      const new_char = tok_top5[largest_tok_t_idx];
+
+      if (new_char != 0 & new_char != returnList[returnList.length-1]) 
+      {
+        returnList.push(new_char);
+        new_prob = this.predict(returnList.slice(-5, returnList.length))
+      }
+
+    }
+    return returnList.slice(5, returnList.length);
+  }
+}
+
 class Recognizer {
     constructor() {
         // TODO: Add Event trigger for listening.
@@ -115,6 +170,11 @@ class Recognizer {
         this.toString = function () {
           return `Recognizer(${this.modelName})`;
         }
+
+
+        // Language Model
+        this.lmPredictor = new LMRecognizer();
+        this.useLM = true;
     }
 
 
@@ -243,13 +303,27 @@ class Recognizer {
     predict(model, dictionary, melSpectrogram) {
       let inputTensor = tf.tensor([melSpectrogram.slice(0,MINLEN[this.modelName])]);
       let predict_tensor = model.predict(inputTensor);
-      let predict_array = Array.from(predict_tensor.dataSync());
-      inputTensor.dispose();
-      predict_tensor.dispose();
 
+      let predict_array;
+      if(Array.isArray(predict_tensor)){
+        console.log("Inference with AcousticModel + LanguageModel");
+        let idx = Array.from(predict_tensor[0].dataSync());
+        let prob = Array.from(predict_tensor[1].dataSync());  
+        predict_array = this.lmPredictor.predictTotal(idx, prob);  
+        predict_tensor[0].dispose();
+        predict_tensor[1].dispose();
+      }
+      else{
+        console.log("Inference with AcousticModel");
+        predict_array = Array.from(predict_tensor.dataSync());
+        predict_tensor.dispose();
+      }
+
+      inputTensor.dispose();
       return this.arr2str(predict_array, dictionary);
     }
 
+    
     /**
      * Start recording single audio.
      * Recording automatically stop after 4sec.
