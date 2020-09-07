@@ -60,13 +60,20 @@ class LMRecognizer{
 
   constructor(cb_model_load){
     this.lmModel = null;
-    this.load_model(cb_model_load);
+    // this.loadModel(cb_model_load);
     this.lmWeight = 0.2;
   }
 
-  async load_model(cb_model_load){
-    let model = await tf.loadGraphModel(`models/LM/model.json`);
-    this.lmModel = model;
+  sleep(t){
+    return new Promise(resolve=>setTimeout(resolve,t));
+  }
+  async loadModel(cb_model_load){
+    if (this.lmModel == null){
+      let model = await tf.loadGraphModel(`models/LM/model.json`);
+      console.log("Load model: LM");
+      this.sleep(100000);
+      this.lmModel = model;
+    }
     if(cb_model_load) cb_model_load();
   }
 
@@ -87,6 +94,8 @@ class LMRecognizer{
       const tok_top5 = idxs.slice(i, i+5);
       let prob_top5 = probs.slice(i, i+5);
 
+      // console.log(tok_top5);
+
       // if (tok_top5[0] == 0) continue
 
       for (let i_top = 0; i_top < tok_top5.length; i_top++) {
@@ -99,7 +108,7 @@ class LMRecognizer{
       
       const largest_tok_t_idx = tf.argMax(prob_top5).dataSync()[0];
       const new_char = tok_top5[largest_tok_t_idx];
-
+      
       if (new_char != 0 & new_char != returnList[returnList.length-1]) 
       {
         returnList.push(new_char);
@@ -127,6 +136,7 @@ class Recognizer {
         this.modelName = "";
         this.model = null;  // ! Promise
         this.dictionary = null; // ! Promise
+        this.lmModel = null; // ! Promise
         this.minLength = null;
         this.onProgress = null;
 
@@ -199,9 +209,14 @@ class Recognizer {
         return;
       }
       this.minLength = MINLEN[modelName];
+
       this.dictionary = this.loadDictionary(modelName);
+
+      this.lmModel = await this.lmPredictor.loadModel();
+      
       this.model = this.loadModel(modelName);
-      return Promise.all([this.model, this.dictionary]);
+
+      return Promise.all([this.model, this.dictionary, this.lmModel]);
     }
 
     async loadModel(modelName) {
