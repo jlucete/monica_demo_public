@@ -87,37 +87,46 @@ class LMRecognizer{
   predictTotal(idxs, probs){
     let tmpResult = [];
     let returnList = [2501, 2501, 2501, 2501, 2501];
+    let predictedData;
+    if (this.lmModel != null){
+      let new_prob = this.predict(returnList);
+      for (let i = 0; i < idxs.length; i += 5) {
+        const tok_top5 = idxs.slice(i, i+5);
+        let prob_top5 = probs.slice(i, i+5);
 
-    let new_prob = this.predict(returnList);
+        // console.log(tok_top5);
 
-    for (let i = 0; i < idxs.length; i += 5) {
-      const tok_top5 = idxs.slice(i, i+5);
-      let prob_top5 = probs.slice(i, i+5);
+        // if (tok_top5[0] == 0) continue
 
-      // console.log(tok_top5);
+        for (let i_top = 0; i_top < tok_top5.length; i_top++) {
+          let tok_t = tok_top5[i_top];
+          let am_t = prob_top5[i_top];
+          if (tok_t == 0) continue;
+          let lm_t = new_prob[tok_t] * this.lmWeight;
+          prob_top5[i_top] = am_t + lm_t;
+        }
+        
+        const largest_tok_t_idx = tf.argMax(prob_top5).dataSync()[0];
+        const new_char = tok_top5[largest_tok_t_idx];
+        
+        if (new_char != 0 & new_char != returnList[returnList.length-1]) 
+        {
+          returnList.push(new_char);
+          new_prob = this.predict(returnList.slice(-5, returnList.length))
+        }
 
-      // if (tok_top5[0] == 0) continue
-
-      for (let i_top = 0; i_top < tok_top5.length; i_top++) {
-        let tok_t = tok_top5[i_top];
-        let am_t = prob_top5[i_top];
-        if (tok_t == 0) continue;
-        let lm_t = new_prob[tok_t] * this.lmWeight;
-        prob_top5[i_top] = am_t + lm_t;
       }
-      
-      const largest_tok_t_idx = tf.argMax(prob_top5).dataSync()[0];
-      const new_char = tok_top5[largest_tok_t_idx];
-      
-      if (new_char != 0 & new_char != returnList[returnList.length-1]) 
-      {
-        returnList.push(new_char);
-        new_prob = this.predict(returnList.slice(-5, returnList.length))
-      }
-
+      predictedData =  returnList.slice(5, returnList.length);
     }
-    return returnList.slice(5, returnList.length);
-  }
+    else{
+      predictedData = [];
+      for (let i = 0; i < idxs.length; i += 5) {
+        const tok_top5 = idxs.slice(i, i+5);
+        predictedData.push(tok_top5);
+      }
+    }
+    return predictedData;
+  }  
 }
 
 class Recognizer {
@@ -212,7 +221,7 @@ class Recognizer {
 
       this.dictionary = this.loadDictionary(modelName);
 
-      this.lmModel = await this.lmPredictor.loadModel();
+      // this.lmModel = await this.lmPredictor.loadModel();
       
       this.model = this.loadModel(modelName);
 
