@@ -122,7 +122,7 @@ class LMRecognizer{
       predictedData = [];
       for (let i = 0; i < idxs.length; i += 5) {
         const tok_top5 = idxs.slice(i, i+5);
-        predictedData.push(tok_top5);
+        predictedData.push(tok_top5[0]);
       }
     }
     return predictedData;
